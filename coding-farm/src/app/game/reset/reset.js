@@ -1,7 +1,6 @@
 // js/game/reset.js
 
 export function setupReset(app) {
-
   app.resetGame = () => {
     // 1. 停止用户代码运行
     app.abortRun?.();
@@ -27,10 +26,10 @@ export function setupReset(app) {
     app.rebuildWorld?.();
 
     // 8. 更新背包 UI
-    app.updateInventory?.();
+    app.ui.updateInventory?.();
 
     // 9. 显示消息
-    if (app.msg) app.msg.textContent = "已重置 ⟳";
+    app.ui.setMsg?.("已重置 ⟳");
 
     console.log("游戏已重置");
   };

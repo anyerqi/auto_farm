@@ -10,24 +10,25 @@ export function setupRunner(app) {
   if (!app.pendingFrameReqs) app.pendingFrameReqs = [];
 
   app.worker = null;
-  app.isRunning = false;
+
+  app.ui.setRunState(false);
   app.runTimeoutMs = 600000; // 默认 10 分钟
 
   const editor = app.editor;
-  const msg = app.msg;
+  //const msg = app.msg;
 
   /**
    * 设置运行状态 + 按钮状态
    */
   function setRunning(v) {
-    app.isRunning = v;
+    app.ui.setRunState(v);
 
     // UI：按钮文案用 updateRunButton
-    if (app.updateRunButton) {
-      app.updateRunButton(v);
+    if (v) {
+      app.ui.setMsg("运行中…");
+    } else {
+      app.ui.setMsg?.("已就绪");
     }
-
-    msg.textContent = v ? "运行中…" : "已就绪";
   }
 
   /**
@@ -44,7 +45,7 @@ export function setupRunner(app) {
     if (app.runTimeoutHandle) clearTimeout(app.runTimeoutHandle);
 
     setRunning(false);
-    msg.textContent = "运行已中止 ⛔";
+    app.ui.setMsg?.("运行已中止 ⛔");
   }
 
   /**
@@ -73,7 +74,7 @@ export function setupRunner(app) {
     });
 
     setRunning(true);
-    msg.textContent = "运行中…";
+    app.ui.setMsg?.("运行中…");
 
     // ====================================================
     // ⭐ handleWorkerCall 现在能正确使用 app.worker
@@ -99,13 +100,15 @@ export function setupRunner(app) {
         case "complete":
           if (app.runTimeoutHandle) clearTimeout(app.runTimeoutHandle);
           setRunning(false);
-          msg.textContent = "运行完成";
+          app.ui.setMsg?.("运行完成");
+
           break;
 
         case "error":
           if (app.runTimeoutHandle) clearTimeout(app.runTimeoutHandle);
           setRunning(false);
-          msg.textContent = "代码错误: " + data.error;
+          app.ui.setMsg?.("代码错误 ⛔" + data.error);
+
           break;
       }
     };
@@ -122,7 +125,7 @@ export function setupRunner(app) {
     if (app.runTimeoutMs > 0) {
       app.runTimeoutHandle = setTimeout(() => {
         abortRun();
-        msg.textContent = "运行超时";
+        app.ui.setMsg?.("运行超时 ⏰");
       }, app.runTimeoutMs);
     }
   }
@@ -132,8 +135,8 @@ export function setupRunner(app) {
   app.abortRun = abortRun;
 
   // 绑定按钮事件（供 setupUI 使用）
-  app.setRunHandlers?.(
+  /*app.setRunHandlers?.(
     () => runUserCode(),
     () => abortRun()
-  );
+  );*/
 }

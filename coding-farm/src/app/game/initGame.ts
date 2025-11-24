@@ -51,10 +51,7 @@ export async function initGame({
   app.ui = ui; // ⭐ 把 React 注入进来的 alert/confirm 挂上去
 
   // 初始化 UI 显示（存档名）
-  const slotLabel = document.getElementById("current-save-slot");
-  if (slotLabel) {
-    slotLabel.textContent = "当前存档：" + slotName;
-  }
+  app.ui.updateSlotLabel("当前存档：" + slotName);
 
   app.pendingFrameReqs = [];
 
@@ -83,7 +80,7 @@ export async function initGame({
   setupLoop(app);
 
   app.drawGrid();
-
+  app.ui.updateInventory(app.inventory.getAll());
   // ================= 存档保存函数 =================
   app.saveCurrentSlot = async function () {
     const metaList = loadSlotMetaList();

@@ -12,6 +12,7 @@ import { useConsole } from "@/components/Console/Console";
 import HeaderBar from "@/components/Header/Header";
 import { UnlockTree } from "@/components/Unlock/UnlockTree";
 import { initMain } from "./game/initMain";
+import { UiBridge } from "./game/types";
 
 export default function HomePage() {
   const appRef = useRef<any | null>(null);
@@ -21,6 +22,37 @@ export default function HomePage() {
   const consoleApi = useConsole();
 
   const [showTech, setShowTech] = useState(false);
+
+  const [appReady, setAppReady] = useState(0);
+
+  const [msg, setMsg] = useState("...");
+  const [slotName, setSlotName] = useState("未使用存档");
+  const [inventory, setInventory] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const ui: UiBridge = {
+    alert,
+    confirm,
+
+    setMsg: (m) => setMsg(m),
+
+    updateInventory: (inv) => {
+      setInventory(
+        `草料(${inv.hay}) 木材(${inv.wood}) 胡萝卜(${inv.carrot}) 南瓜(${inv.pumpkin}) 仙人掌(${inv.cactus}) 金币(${inv.gold}) 苹果(${inv.apple}) 向日葵(${inv.sunflower}) 水(${inv.water}) 肥料(${inv.fertilizer})`
+      );
+    },
+
+    updateSlotLabel: (name) => setSlotName(name),
+
+    setRunState: (running) => setIsRunning(running),
+
+    console: {
+      log: consoleApi.log,
+      system: consoleApi.system,
+    },
+
+    toggleUnlockTree: (show) => setShowUnlock(show),
+  };
 
   const handleStartGame = async ({
     saveData,
@@ -36,8 +68,9 @@ export default function HomePage() {
       saveData,
       slotId,
       slotName,
-      ui: { alert, confirm, console: consoleApi },
+      ui: ui,
     });
+    setAppReady((r) => r + 1);
   };
 
   // 以后 run / reset / save 都可以通过 appRef.current 调用
@@ -64,7 +97,17 @@ export default function HomePage() {
       {/* 启动 / 存档选择弹窗 */}
       <SaveStartModal onStartGame={handleStartGame} />
 
-      <HeaderBar appRef={appRef} onToggleTech={() => setShowTech(true)} />
+      <HeaderBar
+        msg={msg}
+        inventory={inventory}
+        slotName={slotName}
+        isRunning={isRunning}
+        onRun={() => appRef.current?.runUserCode()}
+        onAbort={() => appRef.current?.abortRun()}
+        onReset={() => appRef.current?.resetGame()}
+        onSave={() => appRef.current?.saveCurrentSlot()}
+        onToggleTech={() => ui.toggleUnlockTree(true)}
+      />
 
       <UnlockTree
         appRef={appRef}

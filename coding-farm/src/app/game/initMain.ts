@@ -35,7 +35,7 @@ export async function initMain(options: InitMainOptions) {
 
   console.log("[initMain] Ace ready → initGame");
 
-  initGame({
+  return initGame({
     saveData: options.saveData,
     slotId: options.slotId,
     slotName: options.slotName,

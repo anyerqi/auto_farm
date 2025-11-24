@@ -126,7 +126,7 @@ export function setupSystems(app, saveData = null) {
 
   // 更新背包显示（app.updateInventory 在 UI 中实现）
   app.inventory.onChange(() => {
-    app.updateInventory?.();
+    app.ui.updateInventory?.();
   });
 }
 
