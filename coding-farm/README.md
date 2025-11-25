@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 编程农场（开源版）
 
-## Getting Started
+用 JavaScript 编写脚本、操控角色在 2D 世界里种地、收获、解锁科技并体验多种玩法的学习型小游戏。项目基于 Next.js 16 + React 19 + TypeScript，内置 Ace 编辑器、PIXI 渲染与本地存档。
 
-First, run the development server:
+## 功能概览
+- 代码驱动：在页面左侧用 JS 写脚本，调用 `move`、`plant`、`harvest` 等 API 控制角色，支持并行 `spawn`、角色切换与日志输出。
+- 多种模式：经典种田、南瓜合并、贪吃蛇、迷宫寻宝、多线程协作等，可在脚本和科技树中逐步体验。
+- 科技树与解锁：顶部“科技树”面板展示解锁路径，收集指定物品可解锁新 API、模式或资源。
+- 文档内置：访问 `/doc` 浏览 Markdown 教程与 API 说明（结构由 `public/doc/docs.json` 和同目录下的 `.md` 提供）。
+- 存档管理：启动弹窗可新建/加载/删除存档，数据存于浏览器 `localStorage`（键前缀 `farm_save_slot_*`）。
 
+## 快速开始
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 打开 http://localhost:3000
 ```
+- 运行脚本：进入首页，选择“新游戏”或加载存档，编辑代码后点击“运行”。  
+- 查看文档：在浏览器访问 `/doc`，或直接阅读 `public/doc` 下的 Markdown。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 构建与质量
+- 生产构建：`npm run build`，启动：`npm run start`
+- Lint：`npm run lint`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 主要目录
+- `src/app/page.tsx`：主页 UI，挂载编辑器、画布和控制条。
+- `src/app/game/`：游戏引擎、循环、系统与数据配置（作物、解锁、模式等）。
+- `src/components/`：提示/确认、存档弹窗、科技树、控制台等前端组件。
+- `public/doc/`：文档内容与导航配置。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 开发补充
+- 推荐 Node.js 18+。若修改文档或新增条目，请同步更新 `public/doc/docs.json` 以渲染侧边导航。
+- 本地存档依赖浏览器环境；在无本地存储或隐身模式下存档会丢失。
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 下一步规划
+- 多语言：为界面与文档加入 i18n 切换（简/繁/英等）。
+- 代码市场：提供脚本分享与评分/收藏，支持一键导入示例。
+- Electron + Steam：打包桌面端并发布至 Steam。
+- 版本更新机制：内置版本检测与增量更新提示。
+- 移动端支持：优化触控操作与布局，适配手机/平板。
