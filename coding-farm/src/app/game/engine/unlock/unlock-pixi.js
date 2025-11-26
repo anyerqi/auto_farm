@@ -39,7 +39,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
     return ability.name || "";
   };
   const getReqName = (item) =>
-    tr(inventoryNameKeyMap[item] || item, item);
+    tr(inventoryNameKeyMap[item] || item, item) || item;
 
   // 构建树结构
   const { roots, map } = buildTree(TECH_TREE);
