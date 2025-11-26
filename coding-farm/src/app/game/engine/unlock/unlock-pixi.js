@@ -19,7 +19,7 @@ const inventoryNameKeyMap = {
 
 let techApp = null;
 
-export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
+export function renderUnlockPixi(app, TECH_TREE, graphEl, t = (key) => key) {
   const unlockMgr = app.unlockManager;
 
   const tr = (key, fallback = "") =>
@@ -117,9 +117,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
 
     const curLv = unlockMgr.isUnlocked(node.key)
       ? unlockMgr.getLevel(node.key)
-      : -1;
-
-    const maxLv = unlockMgr.getMaxLevel(node);
+      : -1; 
 
     const curLevelObj = node.levels[curLv] || null;
     const nextLevelObj = node.levels[curLv + 1] || null;
@@ -205,14 +203,14 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
 
     if (!unlockMgr.isUnlocked(key)) {
       if (unlockMgr.unlock(key)) {
-        renderUnlockPixi(app, TECH_TREE, graphEl);
+        renderUnlockPixi(app, TECH_TREE, graphEl, t);
         return;
       }
     }
 
     if (unlockMgr.canUpgrade(key)) {
       if (unlockMgr.upgrade(key)) {
-        renderUnlockPixi(app, TECH_TREE, graphEl);
+        renderUnlockPixi(app, TECH_TREE, graphEl, t);
         return;
       }
     }
