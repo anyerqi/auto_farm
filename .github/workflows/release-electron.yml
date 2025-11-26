@@ -48,7 +48,7 @@ jobs:
           npm run build
 
       - name: Package And Publish Electron app
-        uses: anyerqi/electron-website@v0.1.1
+        uses: anyerqi/electron-website@v0.1.2
         with:
           site-path: coding-farm/out
           app-name: coding-farm
