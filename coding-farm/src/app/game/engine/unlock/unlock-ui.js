@@ -52,6 +52,14 @@ export function updateUnlock() {
     appRef,
     TECH_TREE_REF,
     elGraph,
-    (key) => (typeof key === "string" ? key : String(key))
+    (key, params) => {
+      let str = typeof key === "string" ? key : String(key);
+      if (params && typeof params === "object") {
+        for (const [k, v] of Object.entries(params)) {
+          str = str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+        }
+      }
+      return str;
+    }
   );
 }

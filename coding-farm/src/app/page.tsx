@@ -124,14 +124,11 @@ export default function HomePage() {
       <Script
         src={ACE_SRC}
         strategy="afterInteractive"
-        onLoad={() => {
-          if (document.querySelector('script[data-ace-ext="true"]')) return;
-          const extScript = document.createElement("script");
-          extScript.src = ACE_EXT_SRC;
-          extScript.async = true;
-          extScript.setAttribute("data-ace-ext", "true");
-          document.body.appendChild(extScript);
-        }}
+      />
+      <Script
+        src={ACE_EXT_SRC}
+        strategy="afterInteractive"
+        id="ace-ext"
       />
 
       {/* 自定义标记：Ace 已经加载完成 */}

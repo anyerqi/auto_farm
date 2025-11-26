@@ -39,7 +39,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = (key) => key) {
     return ability.name || "";
   };
   const getReqName = (item) =>
-    tr(inventoryNameKeyMap[item] || item, item);
+    tr(inventoryNameKeyMap[item] || item, item) || item;
 
   // 构建树结构
   const { roots, map } = buildTree(TECH_TREE);
@@ -109,7 +109,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = (key) => key) {
     const currentLevelLabel = tr("unlock.tooltip.currentLevel");
     const lockedLabel = tr("unlock.tooltip.locked");
     const currentEffectLabel = tr(
-      "unlock.tooltip.currentEffect" 
+      "unlock.tooltip.currentEffect"
     );
     const upgradeNeedsLabel = tr("unlock.tooltip.upgradeNeeds");
     const nextEffectLabel = tr("unlock.tooltip.nextEffect");
