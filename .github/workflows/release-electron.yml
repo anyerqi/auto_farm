@@ -49,7 +49,7 @@ jobs:
           npx next export -o out
 
       - name: Package And Publish Electron app
-        uses: anyerqi/website-app@v0.1.0
+        uses: anyerqi/electron-website@v0.1.0
         with:
           site-path: coding-farm/out
           app-name: coding-farm
