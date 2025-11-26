@@ -109,7 +109,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
     const currentLevelLabel = tr("unlock.tooltip.currentLevel");
     const lockedLabel = tr("unlock.tooltip.locked");
     const currentEffectLabel = tr(
-      "unlock.tooltip.currentEffect" 
+      "unlock.tooltip.currentEffect"
     );
     const upgradeNeedsLabel = tr("unlock.tooltip.upgradeNeeds");
     const nextEffectLabel = tr("unlock.tooltip.nextEffect");
