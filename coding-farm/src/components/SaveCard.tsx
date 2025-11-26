@@ -21,7 +21,7 @@ export function SaveCard({
   const { t } = useI18n();
 
   return (
-    <div className={styles.card} data-slot-id={id}>
+    <div className={styles.card}>
       <div className={styles.info}>
         <div className={styles.title}>{name}</div>
         <div className={styles.time}>
