@@ -1,6 +1,19 @@
 "use client";
 import styles from "./Header.module.css";
 import { useI18n } from "../I18nProvider";
+
+interface HeaderProps {
+  msg: string;
+  inventory: string | number;
+  slotName: string;
+  isRunning: boolean;
+  onRun: () => void;
+  onAbort: () => void;
+  onReset: () => void;
+  onSave: () => void;
+  onToggleTech: () => void;
+}
+
 export default function Header({
   msg,
   inventory,
@@ -11,7 +24,7 @@ export default function Header({
   onReset,
   onSave,
   onToggleTech,
-}) {
+}: HeaderProps) {
   const { t } = useI18n();
 
   return (

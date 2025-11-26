@@ -29,7 +29,6 @@ export function LanguageSwitcher() {
           background: "transparent",
           color: "inherit",
           border: "none",
-          outline: "none",
           fontSize: 12,
         }}
       >
