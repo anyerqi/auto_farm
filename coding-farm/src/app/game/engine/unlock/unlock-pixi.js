@@ -117,7 +117,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = (key) => key) {
 
     const curLv = unlockMgr.isUnlocked(node.key)
       ? unlockMgr.getLevel(node.key)
-      : -1; 
+      : -1;
 
     const curLevelObj = node.levels[curLv] || null;
     const nextLevelObj = node.levels[curLv + 1] || null;

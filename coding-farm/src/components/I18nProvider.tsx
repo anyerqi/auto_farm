@@ -29,32 +29,27 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(defaultLocale);
-
-  // Initial locale detection is driven by browser/localStorage; keeping it here
-  // avoids coupling render output to the availability of global objects.
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    const saved =
-      typeof window !== "undefined"
-        ? localStorage.getItem(STORAGE_KEY)
-        : null;
-
-    const browserPref =
-      typeof navigator !== "undefined"
+  const [locale, setLocale] = useState<Locale>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const browserPref = typeof navigator !== "undefined"
         ? navigator.languages?.[0] || navigator.language
         : null;
-
-    const nextLocale = normalizeLocale(saved || browserPref || defaultLocale);
-    if (nextLocale !== locale) {
-      setLocale(nextLocale);
+      return normalizeLocale(saved || browserPref || defaultLocale);
     }
+    return defaultLocale;
+  });
 
-    if (saved !== nextLocale && typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, nextLocale);
+  // Sync localStorage if needed (runs once on mount).
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved !== locale) {
+        localStorage.setItem(STORAGE_KEY, locale);
+      }
     }
-  }, [locale]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
