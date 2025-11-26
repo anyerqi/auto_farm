@@ -4,10 +4,59 @@ import * as PIXI from "pixi.js";
 
 import { buildTree, layoutTree } from "./tech-layout.js";
 
+const abilityNameKeyMap = {
+  "产量倍率": "unlock.ability.yieldMultiplier",
+  "苹果产量倍率": "unlock.ability.appleYieldMultiplier",
+  "世界尺寸": "unlock.ability.worldSize",
+  "生长速度加成": "unlock.ability.growthBonus",
+  "金币产量倍率": "unlock.ability.goldYieldMultiplier",
+  "spawn并发数量": "unlock.ability.spawnConcurrency",
+  "速度倍率": "unlock.ability.speedMultiplier",
+  "水资源每秒产出": "unlock.ability.waterPerSec",
+};
+
+const inventoryNameKeyMap = {
+  hay: "inventory.hay",
+  wood: "inventory.wood",
+  carrot: "inventory.carrot",
+  pumpkin: "inventory.pumpkin",
+  cactus: "inventory.cactus",
+  gold: "inventory.gold",
+  apple: "inventory.apple",
+  sunflower: "inventory.sunflower",
+  water: "inventory.water",
+  fertilizer: "inventory.fertilizer",
+};
+
 let techApp = null;
 
-export function renderUnlockPixi(app, TECH_TREE, graphEl) {
+export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
   const unlockMgr = app.unlockManager;
+
+  const tr = (key, fallback = "") =>
+    t ? t(key, undefined) ?? fallback : fallback;
+
+  const getName = (node) =>
+    tr(`unlock.${node.key}.name`, node.name || node.key);
+  const getDesc = (node) =>
+    node.desc ? tr(`unlock.${node.key}.desc`, node.desc) : "";
+  const getAbilityName = (ability) => {
+    const key = abilityNameKeyMap[ability.name] || ability.nameKey;
+    if (key) return tr(key, ability.name || key);
+    return ability.name || "";
+  };
+  const getReqName = (item) =>
+    tr(inventoryNameKeyMap[item] || item, item);
+
+  const label = {
+    feature: tr("unlock.tooltip.feature", "【功能介绍】"),
+    currentLevel: tr("unlock.tooltip.currentLevel", "【当前等级】"),
+    locked: tr("unlock.tooltip.locked", "未解锁"),
+    currentEffect: tr("unlock.tooltip.currentEffect", "【当前效果】"),
+    upgradeNeeds: tr("unlock.tooltip.upgradeNeeds", "【升级需要】"),
+    nextEffect: tr("unlock.tooltip.nextEffect", "【升级后效果】"),
+    maxLevel: tr("unlock.tooltip.maxLevel", "已达最高等级"),
+  };
 
   // 构建树结构
   const { roots, map } = buildTree(TECH_TREE);
@@ -88,50 +137,54 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl) {
 
     let lines = [];
 
+    const nodeDesc = getDesc(node);
+
     // --- 描述 ---
-    if (node.desc) {
-      lines.push(`【功能介绍】`);
+    if (nodeDesc) {
+      lines.push(label.feature);
       lines.push("");
-      lines.push("　　" + node.desc);
+      lines.push("　　" + nodeDesc);
       lines.push("");
     }
 
     // --- 当前等级 ---
-    lines.push(`【当前等级】${curLv >= 0 ? curLv + 1 : "未解锁"}`);
+    lines.push(`${label.currentLevel}${curLv >= 0 ? curLv + 1 : label.locked}`);
 
     // --- 当前效果 ---
     if (curAbility && curAbility.length > 0) {
-      lines.push("【当前效果】");
+      lines.push(label.currentEffect);
       lines.push("");
       curAbility.forEach((a) => {
-        lines.push(`  • ${a.name}：${a.value}`);
+        lines.push(`  • ${getAbilityName(a)}：${a.value}`);
       });
     }
 
     // --- 升级材料 ---
     if (requires) {
       lines.push("");
-      lines.push("【升级需要】");
+      lines.push(label.upgradeNeeds);
       lines.push("");
       Object.entries(requires).forEach(([item, qty]) => {
-        lines.push(`  • ${item}: ${qty}`);
+        lines.push(`  • ${getReqName(item)}: ${qty}`);
       });
     }
 
     // --- 升级后效果 ---
     if (nextAbility && nextAbility.length > 0) {
       lines.push("");
-      lines.push("【升级后效果】");
+      lines.push(label.nextEffect);
       lines.push("");
       nextAbility.forEach((a) => {
-        lines.push(`  • ${a.name}：${(a.value * 100).toFixed(0) + "%"}`);
+        lines.push(
+          `  • ${getAbilityName(a)}：${(a.value * 100).toFixed(0) + "%"}`
+        );
       });
     }
 
     // --- 已满级 ---
     if (!nextLevelObj) {
       lines.push("");
-      lines.push("已达最高等级");
+      lines.push(label.maxLevel);
     }
 
     tooltipText.text = lines.join("\n");
@@ -169,7 +222,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl) {
       }
     }
 
-    console.log(`❌ 无法升级 ${node.name}`);
+    console.log(`❌ 无法升级 ${getName(node)}`);
   }
 
   // 画线条
@@ -240,13 +293,14 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl) {
     }
 
     // 名字
-    const t = new PIXI.Text(node.name, {
+    const displayName = getName(node);
+    const tName = new PIXI.Text(displayName, {
       fill: "#fff",
       fontSize: 20,
     });
-    t.x = node.x - t.width / 2;
-    t.y = node.y - 20;
-    techApp.graphLayer.addChild(t);
+    tName.x = node.x - tName.width / 2;
+    tName.y = node.y - 20;
+    techApp.graphLayer.addChild(tName);
 
     // 等级显示（UI 级别：未解锁=0，已解锁=真实等级+1）
     const realLv = unlockMgr.getLevel(node.key);

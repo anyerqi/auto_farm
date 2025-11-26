@@ -50,5 +50,10 @@ export function toggleUnlock(show) {
 
 export function updateUnlock() {
   if (!appRef || !elGraph) return;
-  renderUnlockPixi(appRef, TECH_TREE_REF, elGraph);
+  renderUnlockPixi(
+    appRef,
+    TECH_TREE_REF,
+    elGraph,
+    (key) => (typeof key === "string" ? key : String(key))
+  );
 }
