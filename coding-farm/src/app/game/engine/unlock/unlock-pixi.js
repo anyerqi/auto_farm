@@ -4,17 +4,6 @@ import * as PIXI from "pixi.js";
 
 import { buildTree, layoutTree } from "./tech-layout.js";
 
-const abilityNameKeyMap = {
-  "产量倍率": "unlock.ability.yieldMultiplier",
-  "苹果产量倍率": "unlock.ability.appleYieldMultiplier",
-  "世界尺寸": "unlock.ability.worldSize",
-  "生长速度加成": "unlock.ability.growthBonus",
-  "金币产量倍率": "unlock.ability.goldYieldMultiplier",
-  "spawn并发数量": "unlock.ability.spawnConcurrency",
-  "速度倍率": "unlock.ability.speedMultiplier",
-  "水资源每秒产出": "unlock.ability.waterPerSec",
-};
-
 const inventoryNameKeyMap = {
   hay: "inventory.hay",
   wood: "inventory.wood",
@@ -41,22 +30,16 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
   const getDesc = (node) =>
     node.desc ? tr(`unlock.${node.key}.desc`, node.desc) : "";
   const getAbilityName = (ability) => {
-    const key = abilityNameKeyMap[ability.name] || ability.nameKey;
+    const key =
+      ability.nameKey ||
+      (typeof ability.name === "string" && ability.name.startsWith("unlock.")
+        ? ability.name
+        : null);
     if (key) return tr(key, ability.name || key);
     return ability.name || "";
   };
   const getReqName = (item) =>
     tr(inventoryNameKeyMap[item] || item, item);
-
-  const label = {
-    feature: tr("unlock.tooltip.feature", "【功能介绍】"),
-    currentLevel: tr("unlock.tooltip.currentLevel", "【当前等级】"),
-    locked: tr("unlock.tooltip.locked", "未解锁"),
-    currentEffect: tr("unlock.tooltip.currentEffect", "【当前效果】"),
-    upgradeNeeds: tr("unlock.tooltip.upgradeNeeds", "【升级需要】"),
-    nextEffect: tr("unlock.tooltip.nextEffect", "【升级后效果】"),
-    maxLevel: tr("unlock.tooltip.maxLevel", "已达最高等级"),
-  };
 
   // 构建树结构
   const { roots, map } = buildTree(TECH_TREE);
@@ -122,6 +105,16 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
   techApp.uiLayer.addChild(tooltip);
 
   function updateTooltip(node, unlockMgr) {
+    const featureLabel = tr("unlock.tooltip.feature");
+    const currentLevelLabel = tr("unlock.tooltip.currentLevel");
+    const lockedLabel = tr("unlock.tooltip.locked");
+    const currentEffectLabel = tr(
+      "unlock.tooltip.currentEffect" 
+    );
+    const upgradeNeedsLabel = tr("unlock.tooltip.upgradeNeeds");
+    const nextEffectLabel = tr("unlock.tooltip.nextEffect");
+    const maxLevelLabel = tr("unlock.tooltip.maxLevel");
+
     const curLv = unlockMgr.isUnlocked(node.key)
       ? unlockMgr.getLevel(node.key)
       : -1;
@@ -141,18 +134,20 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
 
     // --- 描述 ---
     if (nodeDesc) {
-      lines.push(label.feature);
+      lines.push(featureLabel);
       lines.push("");
       lines.push("　　" + nodeDesc);
       lines.push("");
     }
 
     // --- 当前等级 ---
-    lines.push(`${label.currentLevel}${curLv >= 0 ? curLv + 1 : label.locked}`);
+    lines.push(
+      `${currentLevelLabel}${curLv >= 0 ? curLv + 1 : lockedLabel}`
+    );
 
     // --- 当前效果 ---
     if (curAbility && curAbility.length > 0) {
-      lines.push(label.currentEffect);
+      lines.push(currentEffectLabel);
       lines.push("");
       curAbility.forEach((a) => {
         lines.push(`  • ${getAbilityName(a)}：${a.value}`);
@@ -162,7 +157,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
     // --- 升级材料 ---
     if (requires) {
       lines.push("");
-      lines.push(label.upgradeNeeds);
+      lines.push(upgradeNeedsLabel);
       lines.push("");
       Object.entries(requires).forEach(([item, qty]) => {
         lines.push(`  • ${getReqName(item)}: ${qty}`);
@@ -172,7 +167,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
     // --- 升级后效果 ---
     if (nextAbility && nextAbility.length > 0) {
       lines.push("");
-      lines.push(label.nextEffect);
+      lines.push(nextEffectLabel);
       lines.push("");
       nextAbility.forEach((a) => {
         lines.push(
@@ -184,7 +179,7 @@ export function renderUnlockPixi(app, TECH_TREE, graphEl, t = null) {
     // --- 已满级 ---
     if (!nextLevelObj) {
       lines.push("");
-      lines.push(label.maxLevel);
+      lines.push(maxLevelLabel);
     }
 
     tooltipText.text = lines.join("\n");
