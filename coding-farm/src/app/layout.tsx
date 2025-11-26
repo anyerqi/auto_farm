@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang={defaultLocale} suppressHydrationWarning>
+    <html lang={defaultLocale}>
       <body>
         <I18nProvider>
           <AlertProvider>
