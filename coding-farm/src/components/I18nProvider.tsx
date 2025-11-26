@@ -31,9 +31,8 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>(defaultLocale);
 
-  // Initial locale detection is driven by browser/localStorage; keeping it here
-  // avoids coupling render output to the availability of global objects.
-  /* eslint-disable react-hooks/set-state-in-effect */
+  // Initial locale detection runs once on mount.
+  // We read from localStorage/browser and sync state accordingly.
   useEffect(() => {
     const saved =
       typeof window !== "undefined"
@@ -46,15 +45,13 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         : null;
 
     const nextLocale = normalizeLocale(saved || browserPref || defaultLocale);
-    if (nextLocale !== locale) {
-      setLocale(nextLocale);
-    }
+    setLocale(nextLocale);
 
     if (saved !== nextLocale && typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY, nextLocale);
     }
-  }, [locale]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
