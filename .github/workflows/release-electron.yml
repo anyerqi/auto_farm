@@ -46,7 +46,6 @@ jobs:
         working-directory: coding-farm
         run: |
           npm run build
-          npx next export -o out
 
       - name: Package And Publish Electron app
         uses: anyerqi/electron-website@v0.1.0
