@@ -21,6 +21,15 @@ export async function setupEditor(app, saveData = null) {
 
   // 将 editor 挂到 app 上（方便 save/restore 使用）
   app.editor = editor;
+
+  // 延迟调用 resize 确保编辑器在移动端抽屉等场景下正确渲染
+  setTimeout(() => {
+    try {
+      editor.resize();
+    } catch (e) {
+      // 忽略 resize 错误，编辑器打开时会再次 resize
+    }
+  }, 100);
 }
 
 // -------------------------

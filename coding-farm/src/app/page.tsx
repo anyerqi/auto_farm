@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SaveStartModal } from "@/components/SaveStartModal/SaveStartModal";
 import { useAlert } from "@/components/AlertProvider";
 import { useConfirm } from "@/components/ConfirmProvider";
@@ -14,6 +14,8 @@ import { initMain } from "./game/initMain";
 import { UiBridge, UiMessage } from "./game/types";
 import { useI18n } from "@/components/I18nProvider";
 import type { TranslationKey } from "@/i18n/core";
+import { useRouter } from "next/navigation";
+import { isMobileUserAgent } from "@/utils/device";
 
 const ACE_SRC =
   "https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-min-noconflict/ace.js";
@@ -35,7 +37,25 @@ const INVENTORY_LABEL_MAP: Record<string, TranslationKey> = {
 
 type InventorySnapshot = Record<string, number>;
 
-export default function HomePage() {
+export default function HomeEntry() {
+  const router = useRouter();
+  const [renderDesktop, setRenderDesktop] = useState(false);
+
+  useEffect(() => {
+    const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+    if (ua && isMobileUserAgent(ua)) {
+      router.replace("/mobile");
+      return;
+    }
+    setRenderDesktop(true);
+  }, [router]);
+
+  if (!renderDesktop) return null;
+
+  return <DesktopHome />;
+}
+
+function DesktopHome() {
   const appRef = useRef<any | null>(null);
   const alert = useAlert();
   const confirm = useConfirm();
@@ -119,22 +139,25 @@ export default function HomePage() {
   // 比如将来：
   // const handleSave = () => appRef.current?.saveCurrentSlot?.();
 
+  const [aceLoaded, setAceLoaded] = useState(false);
+
   return (
     <>
       <Script
         src={ACE_SRC}
         strategy="afterInteractive"
+        onReady={() => setAceLoaded(true)}
       />
-      <Script
-        src={ACE_EXT_SRC}
-        strategy="afterInteractive"
-        id="ace-ext"
-      />
-
-      {/* 自定义标记：Ace 已经加载完成 */}
-      <Script id="ace-ready" strategy="afterInteractive">
-        {`window.__aceReady = true;`}
-      </Script>
+      {aceLoaded && (
+        <Script
+          src={ACE_EXT_SRC}
+          strategy="afterInteractive"
+          id="ace-ext"
+          onReady={() => {
+            (window as any).__aceReady = true;
+          }}
+        />
+      )}
 
       {/* 启动 / 存档选择弹窗 */}
       <SaveStartModal onStartGame={handleStartGame} />
