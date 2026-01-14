@@ -8,6 +8,8 @@ export async function setupEditor(app, saveData = null) {
   const initialCode = saveData?.editor?.code || DEFAULT_CODE;
   editor.setValue(initialCode, -1);
 
+  // 使用本地 ACE 资源
+  ace.config.set("basePath", "/ace");
   editor.setTheme("ace/theme/monokai");
   editor.session.setMode("ace/mode/javascript");
   editor.setOptions({

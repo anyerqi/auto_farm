@@ -17,10 +17,8 @@ import type { TranslationKey } from "@/i18n/core";
 import { useRouter } from "next/navigation";
 import { isMobileUserAgent } from "@/utils/device";
 
-const ACE_SRC =
-  "https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-min-noconflict/ace.js";
-const ACE_EXT_SRC =
-  "https://cdn.jsdelivr.net/npm/ace-builds@1.32.0/src-noconflict/ext-language_tools.js";
+const ACE_SRC = "/ace/ace.js";
+const ACE_EXT_SRC = "/ace/ext-language_tools.js";
 
 const INVENTORY_LABEL_MAP: Record<string, TranslationKey> = {
   hay: "inventory.hay",
